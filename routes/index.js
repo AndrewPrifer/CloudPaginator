@@ -5,7 +5,7 @@ var ejs = require('ejs');
 
 var cheerio = require('cheerio');
 
-router.get('/', function(req, res) {
+router.post('/', function(req, res) {
   res.redirect('/paginate-html');
 });
 
