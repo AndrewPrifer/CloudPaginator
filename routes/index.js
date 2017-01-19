@@ -37,20 +37,28 @@ router.post('/reader', upload.single('epub'), function (req, res) {
   const epubPath = `${req.file.path}.epub`;
   fs.renameSync(req.file.path, epubPath);
 
-  const reader = new EPub(epubPath);
+  const epub = new EPub(epubPath);
 
-  reader.on('end', () => {
+  epub.on('end', () => {
     fs.createReadStream(epubPath)
       .pipe(unzip.Extract({ path: req.file.path }))
       .on('close', () => {
-        Promise.all(reader.flow.map(e => inline(path.join(req.file.path, e.href))))
-          .then((htmls) => {
-            console.log('done');
-            res.send(htmls);
+        Promise.all(epub.flow.map(e => inline(path.join(req.file.path, e.href))))
+          .then((chapters) => {
+            const book = epub.metadata;
+            book.chapters = epub.flow.map((e, i) => ({
+              title: e.title,
+              order: e.order,
+              html: chapters[i],
+            }));
+
+            const template = fs.readFileSync('assets/reader.ejs', 'utf8');
+            const reader = ejs.render(template, { book: JSON.stringify(book) } );
+            res.send(reader);
           });
       });
   });
-  reader.parse();
+  epub.parse();
 });
 
 /**

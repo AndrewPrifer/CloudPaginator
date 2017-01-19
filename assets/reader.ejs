@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    iframe {
+      border-style: none;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="chapter">
+  </div>
+  <div>
+    <button onclick="prev();">Prev</button>
+    <button onclick="next();">Next</button>
+  </div>
+
+  <script>
+  var book = <%- book %>;
+
+  var currentChapter = 0;
+
+  var chapterElement = document.querySelector('#chapter');
+  var iframe = document.createElement('iframe');
+  iframe.height = 500;
+  iframe.width = 1000
+  chapterElement.appendChild(iframe);
+  iframe.contentWindow.document.open();
+
+  // display first chapter
+  iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+  iframe.contentWindow.document.close();
+
+  function prev() {
+    currentChapter--;
+    iframe.contentWindow.document.open();
+    // display first chapter
+    iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+    iframe.contentWindow.document.close();
+  }
+
+  function next() {
+    currentChapter++;
+    iframe.contentWindow.document.open();
+    // display first chapter
+    iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+    iframe.contentWindow.document.close();
+  }
+
+  </script>
+</body>
+</html>
