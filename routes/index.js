@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const mv = require('mv');
 const unzip = require('unzip');
@@ -39,11 +39,12 @@ router.post('/reader', upload.single('epub'), function (req, res) {
 
   const epub = new EPub(epubPath);
 
+  const unzipPath = req.file.path;
   epub.on('end', () => {
     fs.createReadStream(epubPath)
-      .pipe(unzip.Extract({ path: req.file.path }))
+      .pipe(unzip.Extract({ path: unzipPath }))
       .on('close', () => {
-        Promise.all(epub.flow.map(e => inline(path.join(req.file.path, e.href))))
+        Promise.all(epub.flow.map(e => inline(path.join(unzipPath, e.href))))
           .then((chapters) => {
             const book = epub.metadata;
             book.chapters = epub.flow.map((e, i) => ({
@@ -55,6 +56,10 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             const template = fs.readFileSync('assets/reader.ejs', 'utf8');
             const reader = ejs.render(template, { book: JSON.stringify(book) } );
             res.send(reader);
+
+            // remove temporary files
+            fs.remove(epubPath);
+            fs.remove(unzipPath);
           });
       });
   });
