@@ -11,6 +11,12 @@ const cheerio = require('cheerio');
 const Inliner = require('inliner');
 const EPub = require('epub');
 
+router.all('/*', function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 router.post('/', function (req, res) {
   res.redirect('/paginate-html');
 });
@@ -54,7 +60,11 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             }));
 
             const template = fs.readFileSync('assets/reader.ejs', 'utf8');
-            const reader = ejs.render(template, { book: JSON.stringify(book) } );
+            const reader = ejs.render(template, {
+              book: JSON.stringify(book),
+              readerWidth: req.body.width,
+              readerHeight: req.body.height
+            });
             res.send(reader);
 
             // remove temporary files

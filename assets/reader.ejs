@@ -9,7 +9,6 @@
     body {
       display: flex;
       flex-direction: column;
-      height: 100%;
       align-items: center;
       justify-content: center;
       position: absolute;
@@ -31,14 +30,18 @@
   </div>
 
   <script>
+  // global bariables
   var book = <%- book %>;
+  var readerWidth = <%- readerWidth %>
+  var readerHeight = <%- readerHeight %>
 
+  // should be extracted to module
   var currentChapter = 0;
 
   var chapterElement = document.querySelector('#chapter');
   var iframe = document.createElement('iframe');
-  iframe.height = 500;
-  iframe.width = 1000
+  iframe.height = readerHeight;
+  iframe.width = readerWidth;
   chapterElement.appendChild(iframe);
   iframe.contentWindow.document.open();
 
