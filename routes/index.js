@@ -43,6 +43,9 @@ router.post('/reader', upload.single('epub'), function (req, res) {
   const epubPath = `${req.file.path}.epub`;
   fs.renameSync(req.file.path, epubPath);
 
+  const width = req.body.width;
+  const height = req.body.height;
+
   const epub = new EPub(epubPath);
 
   const unzipPath = req.file.path;
@@ -50,8 +53,20 @@ router.post('/reader', upload.single('epub'), function (req, res) {
     fs.createReadStream(epubPath)
       .pipe(unzip.Extract({ path: unzipPath }))
       .on('close', () => {
-        Promise.all(epub.flow.map(e => inline(path.join(unzipPath, e.href))))
+        Promise.all(epub.flow.map((e) => {
+            const inject = fs.readFileSync('assets/inject.ejs', 'utf8');
+            const html = fs.readFileSync(path.join(unzipPath, e.href), 'utf8');
+            const renderedInject = ejs.render(inject, { height, width });
+            $ = cheerio.load(html);
+
+            // injection results in syntax error after inlining
+            $('body').append(renderedInject);
+            fs.writeFileSync(path.join(unzipPath, e.href), $.html(), 'utf8');
+            return inline(path.join(unzipPath, e.href));
+          }))
           .then((chapters) => {
+
+            // build the book
             const book = epub.metadata;
             book.chapters = epub.flow.map((e, i) => ({
               title: e.title,
@@ -59,11 +74,12 @@ router.post('/reader', upload.single('epub'), function (req, res) {
               html: chapters[i],
             }));
 
+            // build the reader
             const template = fs.readFileSync('assets/reader.ejs', 'utf8');
             const reader = ejs.render(template, {
               book: JSON.stringify(book),
-              readerWidth: req.body.width,
-              readerHeight: req.body.height
+              readerWidth: width,
+              readerHeight: height,
             });
             res.send(reader);
 
