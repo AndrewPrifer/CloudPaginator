@@ -60,8 +60,8 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             $ = cheerio.load(html);
 
             // injection results in syntax error after inlining
-            $('body').append(renderedInject);
-            fs.writeFileSync(path.join(unzipPath, e.href), $.html(), 'utf8');
+            // $('body').append(renderedInject);
+            fs.writeFileSync(path.join(unzipPath, e.href), escapeScript($.html()), 'utf8');
             return inline(path.join(unzipPath, e.href));
           }))
           .then((chapters) => {
@@ -97,7 +97,7 @@ router.post('/reader', upload.single('epub'), function (req, res) {
  */
 function inline(path) {
   return new Promise((resolve, reject) => {
-    const inliner = new Inliner(path, (error, html) => {
+    const inliner = new Inliner(path, { images: false }, (error, html) => {
       if (error) {
         reject(error);
       } else {
@@ -105,6 +105,12 @@ function inline(path) {
       }
     });
   });
+}
+
+function escapeScript(html) {
+  const replaced = html.replace(new RegExp('</script>', 'g'), '\\<\\/script\\>');
+  console.log(replaced);
+  return replaced;
 }
 
 module.exports = router;

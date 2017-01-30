@@ -1,14 +1,14 @@
 <script>
-  var desiredHeight = <%- height || "window.innerHeight"%>;
-  var desiredWidth = <%- width || "window.innerWidth"%>;
+  var desiredHeight = <%- height || 'window.innerHeight'%>;
+  var desiredWidth = <%- width || 'window.innerWidth'%>;
 
   var bodyID = document.getElementsByTagName('body')[0];
   var style = bodyID.currentStyle || window.getComputedStyle(bodyID);
   var gap = 2 * style.marginLeft.slice(0,-2);
   var totalHeight = bodyID.offsetHeight;
   var pageCount = Math.floor(totalHeight/desiredHeight) + 1;
-  bodyID.style.columnGap = gap + "px";
-  bodyID.style.width = desiredWidth * pageCount + "px";
-  bodyID.style.height = desiredHeight + "px";
-  bodyID.style.columnWidth = desiredWidth-gap + "px";
+  bodyID.style.columnGap = gap + 'px';
+  bodyID.style.width = desiredWidth * pageCount + 'px';
+  bodyID.style.height = desiredHeight + 'px';
+  bodyID.style.columnWidth = desiredWidth-gap + 'px';
 </script>
