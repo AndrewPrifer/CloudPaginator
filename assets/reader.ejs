@@ -46,14 +46,14 @@
   iframe.contentWindow.document.open();
 
   // display first chapter
-  iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+  iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
   iframe.contentWindow.document.close();
 
   function prev() {
     currentChapter--;
     iframe.contentWindow.document.open();
     // display first chapter
-    iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+    iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
     iframe.contentWindow.document.close();
   }
 
@@ -61,7 +61,7 @@
     currentChapter++;
     iframe.contentWindow.document.open();
     // display first chapter
-    iframe.contentWindow.document.write(book.chapters[currentChapter].html);
+    iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
     iframe.contentWindow.document.close();
   }
 

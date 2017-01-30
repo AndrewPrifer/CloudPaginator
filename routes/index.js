@@ -10,6 +10,7 @@ const upload = multer({ dest: 'uploads/' });
 const cheerio = require('cheerio');
 const Inliner = require('inliner');
 const EPub = require('epub');
+const btoa = require('abab').btoa;
 
 router.all('/*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -71,7 +72,7 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             book.chapters = epub.flow.map((e, i) => ({
               title: e.title,
               order: e.order,
-              html: chapters[i],
+              html: btoa(chapters[i]),
             }));
 
             // build the reader

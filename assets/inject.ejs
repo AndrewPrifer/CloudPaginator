@@ -11,4 +11,6 @@
   bodyID.style.width = desiredWidth * pageCount + "px";
   bodyID.style.height = desiredHeight + "px";
   bodyID.style.columnWidth = desiredWidth-gap + "px";
+  bodyID.style.overflow = "scroll";
+  document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
 </script>
