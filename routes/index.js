@@ -60,8 +60,6 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             const renderedInject = ejs.render(inject, { height, width });
             $ = cheerio.load(html);
 
-            // injection results in syntax error after inlining
-            $('body').append(renderedInject);
             fs.writeFileSync(path.join(unzipPath, e.href), $.html(), 'utf8');
             return inline(path.join(unzipPath, e.href));
           }))

@@ -1,6 +1,6 @@
 <script>
-  var desiredHeight = <%- height || "window.innerHeight"%>;
-  var desiredWidth = <%- width || "window.innerWidth"%>;
+  var desiredHeight = <%- height || 'window.innerHeight'%>;
+  var desiredWidth = <%- width || 'window.innerWidth'%>;
 
   var bodyID = document.getElementsByTagName('body')[0];
   var style = bodyID.currentStyle || window.getComputedStyle(bodyID);
