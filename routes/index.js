@@ -55,11 +55,8 @@ router.post('/reader', upload.single('epub'), function (req, res) {
       .pipe(unzip.Extract({ path: unzipPath }))
       .on('close', () => {
         Promise.all(epub.flow.map((e) => {
-            const inject = fs.readFileSync('assets/inject.ejs', 'utf8');
             const html = fs.readFileSync(path.join(unzipPath, e.href), 'utf8');
-            const renderedInject = ejs.render(inject, { height, width });
             $ = cheerio.load(html);
-
             fs.writeFileSync(path.join(unzipPath, e.href), $.html(), 'utf8');
             return inline(path.join(unzipPath, e.href));
           }))
@@ -69,6 +66,7 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             const book = epub.metadata;
             book.chapters = epub.flow.map((e, i) => ({
               title: e.title,
+              href: e.href,
               order: e.order,
               html: btoa(chapters[i]),
             }));
