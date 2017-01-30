@@ -47,7 +47,7 @@
 
   // display first chapter
   iframe.contentWindow.document.write(book.chapters[currentChapter].html);
-  paginate(iframe.contentWindow.document.getElementsByTagName('body')[0], readerHeight, readerWidth);
+  paginate(iframe.contentWindow.document, readerHeight, readerWidth);
   iframe.contentWindow.document.close();
 
   function prev() {
@@ -55,7 +55,7 @@
     iframe.contentWindow.document.open();
     // display first chapter
     iframe.contentWindow.document.write(book.chapters[currentChapter].html);
-    paginate(iframe.contentWindow.document.getElementsByTagName('body')[0], readerHeight, readerWidth);
+    paginate(iframe.contentWindow.document, readerHeight, readerWidth);
     iframe.contentWindow.document.close();
   }
 
@@ -64,11 +64,12 @@
     iframe.contentWindow.document.open();
     // display first chapter
     iframe.contentWindow.document.write(book.chapters[currentChapter].html);
-    paginate(iframe.contentWindow.document.getElementsByTagName('body')[0], readerHeight, readerWidth);
+    paginate(iframe.contentWindow.document, readerHeight, readerWidth);
     iframe.contentWindow.document.close();
   }
 
-  function paginate(body, height, width) {
+  function paginate(document, height, width) {
+    var body = document.getElementsByTagName('body')[0];
     var style = body.currentStyle || window.getComputedStyle(body);
     var gap = 2 * style.marginLeft.slice(0,-2);
     var totalHeight = body.offsetHeight;
@@ -77,6 +78,8 @@
     body.style.width = width * pageCount + 'px';
     body.style.height = height + 'px';
     body.style.columnWidth = width-gap + 'px';
+    body.style.overflow = "scroll";
+    document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
   }
 
   </script>
