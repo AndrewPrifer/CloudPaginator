@@ -31,9 +31,10 @@
 
   <script>
   // global variables
-  var book = <%- book %>;
+  var book = <%- book %>; // (html base64 encoded)
   var readerWidth = <%- readerWidth %>;
   var readerHeight = <%- readerHeight %>;
+  var scripts = <%- scripts %>; // scripts to be appended to chapters (base64 encoded)
 
   // should be extracted to module
   var currentChapter = 0;
@@ -53,6 +54,7 @@
   function prev() {
     currentChapter--;
     iframe.contentWindow.document.open();
+
     // display first chapter
     iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
     paginate(iframe.contentWindow.document, readerHeight, readerWidth);
@@ -80,6 +82,10 @@
     body.style.columnWidth = width-gap + 'px';
     body.style.overflow = "scroll";
     document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
+
+    var script = document.createElement('script');
+    script.text = atob(scripts.polyfill); // polyfill
+    document.styleSheets[0].addRule('body', 'scroll-snap-type: mandatory');
   }
 
   </script>

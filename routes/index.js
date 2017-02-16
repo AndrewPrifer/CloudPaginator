@@ -72,11 +72,13 @@ router.post('/reader', upload.single('epub'), function (req, res) {
             }));
 
             // build the reader
+            const polyfill = fs.readFileSync('assets/js/scrollsnap-polyfill.bundled.js');
             const template = fs.readFileSync('assets/reader.ejs', 'utf8');
             const reader = ejs.render(template, {
               book: JSON.stringify(book),
               readerWidth: width,
               readerHeight: height,
+              scripts: JSON.stringify({polyfill: btoa(polyfill)}),
             });
             res.send(reader);
 
