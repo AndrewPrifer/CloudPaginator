@@ -25,8 +25,8 @@
   <div id="chapter">
   </div>
   <div>
-    <button onclick="prev();">Prev</button>
-    <button onclick="next();">Next</button>
+    <button id="prev" onclick="prev();">Prev</button>
+    <button id="next" onclick="next();">Next</button>
   </div>
 
   <script>
@@ -35,14 +35,17 @@
   var readerWidth = <%- readerWidth %>;
   var readerHeight = <%- readerHeight %>;
 
-  // should be extracted to module
-  var currentChapter = 0;
-
   var chapterElement = document.querySelector('#chapter');
   var iframe = document.createElement('iframe');
   iframe.height = readerHeight;
   iframe.width = readerWidth;
   chapterElement.appendChild(iframe);
+
+  var prevButton = document.querySelector('#prev');
+  var nextButton = document.querySelector('#next');
+
+  var currentChapter = 0;
+  prevButton.disabled = true;
 
   function navigate(chapter, hash) {
     if (typeof chapter !== 'number') {
@@ -66,11 +69,17 @@
   function prev() {
     currentChapter--;
     navigate(currentChapter);
+
+    prevButton.disabled = (currentChapter - 1 < 0);
+    nextButton.disabled = (currentChapter + 1 >= book.chapters.length);
   }
 
   function next() {
     currentChapter++;
     navigate(currentChapter);
+
+    prevButton.disabled = (currentChapter - 1 < 0);
+    nextButton.disabled = (currentChapter + 1 >= book.chapters.length);
   }
 
   function paginate(document, height, width) {
