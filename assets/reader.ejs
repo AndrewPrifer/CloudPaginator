@@ -76,6 +76,13 @@
     body.style.columnWidth = width-gap + 'px';
     body.style.overflow = "scroll";
     document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
+
+    // prevent default link action
+    for (var ls = document.links, numLinks = ls.length, i=0; i<numLinks; i++){
+      ls[i].onclick = (e) => {
+        e.preventDefault();
+      };
+    }
   }
 
   </script>
