@@ -44,7 +44,7 @@
   iframe.width = readerWidth;
   chapterElement.appendChild(iframe);
 
-  function navigate(chapter) {
+  function navigate(chapter, hash) {
     if (typeof chapter !== 'number') {
       chapter = book.chapters.findIndex(e => e.href.slice(5) === chapter);
     }
@@ -54,6 +54,7 @@
     iframe.contentWindow.document.open();
     iframe.contentWindow.document.write(atob(book.chapters[chapter].html));
     paginate(iframe.contentWindow.document, readerHeight, readerWidth);
+    iframe.contentWindow.location.hash = hash || '';
     iframe.contentWindow.document.close();
 
     currentChapter = chapter;
@@ -82,7 +83,7 @@
     body.style.width = width * pageCount + 'px';
     body.style.height = height + 'px';
     body.style.columnWidth = width-gap + 'px';
-    body.style.overflow = "scroll";
+    body.style.overflow = 'scroll';
     document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
 
     // prevent default link action
@@ -95,8 +96,6 @@
         navigate(url.pathname, url.hash);
       };
     }
-
-    book.chapters.forEach(e => console.log(e.href));
   }
 
   </script>
