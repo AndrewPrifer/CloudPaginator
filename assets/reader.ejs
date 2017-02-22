@@ -43,29 +43,25 @@
   iframe.height = readerHeight;
   iframe.width = readerWidth;
   chapterElement.appendChild(iframe);
-  iframe.contentWindow.document.open();
 
-  // display first chapter
-  iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
-  paginate(iframe.contentWindow.document, readerHeight, readerWidth);
-  iframe.contentWindow.document.close();
-
-  function prev() {
-    currentChapter--;
+  function navigate(chapter) {
     iframe.contentWindow.document.open();
-    // display first chapter
-    iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
+    iframe.contentWindow.document.write(atob(book.chapters[chapter].html));
     paginate(iframe.contentWindow.document, readerHeight, readerWidth);
     iframe.contentWindow.document.close();
   }
 
+  // display first chapter
+  navigate(currentChapter);
+
+  function prev() {
+    currentChapter--;
+    navigate(currentChapter);
+  }
+
   function next() {
     currentChapter++;
-    iframe.contentWindow.document.open();
-    // display first chapter
-    iframe.contentWindow.document.write(atob(book.chapters[currentChapter].html));
-    paginate(iframe.contentWindow.document, readerHeight, readerWidth);
-    iframe.contentWindow.document.close();
+    navigate(currentChapter);
   }
 
   function paginate(document, height, width) {
