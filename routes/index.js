@@ -19,21 +19,7 @@ router.all('/*', function (req, res, next) {
 });
 
 router.post('/', function (req, res) {
-  res.redirect('/paginate-html');
-});
-
-router.post('/paginate-html', function (req, res) {
-  const json = req.body;
-  const height = json.height;
-  const width = json.width;
-  const html = json.html;
-
-  const inject = fs.readFileSync('assets/inject.ejs', 'utf8');
-  const renderedInject = ejs.render(inject, { height: height, width: width });
-  $ = cheerio.load(html);
-  $('body').append(renderedInject);
-
-  res.send($.html());
+  res.redirect('/reader');
 });
 
 /**
