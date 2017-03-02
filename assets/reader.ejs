@@ -22,31 +22,43 @@
 </head>
 <body>
 
+  <!-- injection point for chapter -->
   <div id="chapter">
   </div>
+
+  <!-- navigation buttons -->
   <div>
     <button id="prev" onclick="prev();">Prev</button>
     <button id="next" onclick="next();">Next</button>
   </div>
 
   <script>
-  // global variables
+  // variables filled by the server based on request
   var book = <%- book %>;
   var readerWidth = <%- readerWidth %>;
   var readerHeight = <%- readerHeight %>;
 
+  // create an iframe with the given width and heigth
   var chapterElement = document.querySelector('#chapter');
   var iframe = document.createElement('iframe');
   iframe.height = readerHeight;
   iframe.width = readerWidth;
   chapterElement.appendChild(iframe);
 
+  // navigation buttons
   var prevButton = document.querySelector('#prev');
   var nextButton = document.querySelector('#next');
 
+  // set the initial chapter to the first one and disable back button
   var currentChapter = 0;
   prevButton.disabled = true;
 
+  /**
+   * Navigates to the specified chapter.
+   *
+   * @param {number|string} chapter - The chapter to navigate to. Either a number or a URL.
+   * @param {string} [hash] - The hash within the chapter to navigate to. Only applicaple if chapter is a URL.
+   */
   function navigate(chapter, hash) {
     if (typeof chapter !== 'number') {
       chapter = book.chapters.findIndex(e => e.href.slice(5) === chapter);
@@ -64,9 +76,12 @@
     currentChapter = chapter;
   }
 
-  // display first chapter
+  // display initial chapter
   navigate(currentChapter);
 
+  /**
+   * Goes back one chapter.
+   */
   function prev() {
     currentChapter--;
     navigate(currentChapter);
@@ -75,6 +90,9 @@
     nextButton.disabled = (currentChapter + 1 >= book.chapters.length);
   }
 
+  /**
+   * Goes forward one chapter.
+   */
   function next() {
     currentChapter++;
     navigate(currentChapter);
@@ -83,6 +101,13 @@
     nextButton.disabled = (currentChapter + 1 >= book.chapters.length);
   }
 
+  /**
+   * Paginates the provided chapter.
+   *
+   * @param {HTMLDocument} document - The document to paginate.
+   * @param {number} width - The width of the viewport.
+   * @param {number} height - The height of the viewport.
+   */
   function paginate(document, height, width) {
     var body = document.getElementsByTagName('body')[0];
     var style = body.currentStyle || window.getComputedStyle(body);
@@ -96,7 +121,7 @@
     body.style.overflow = 'scroll';
     document.styleSheets[0].addRule('::-webkit-scrollbar', 'display: none');
 
-    // prevent default link action
+    // redefine link behavior to navigate within book
     for (var ls = document.links, numLinks = ls.length, i=0; i<numLinks; i++){
       ls[i].onclick = (e) => {
         e.preventDefault();

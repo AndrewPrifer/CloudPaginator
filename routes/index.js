@@ -12,34 +12,37 @@ const Inliner = require('inliner');
 const EPub = require('epub');
 const btoa = require('abab').btoa;
 
+// allow cross-origin access
 router.all('/*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });
 
+// redirect root endpoint to /reader
 router.post('/', function (req, res) {
   res.redirect('/reader');
 });
 
-/**
- * This endpoint accepts an epub file, inlines the chapters and sends them back.
- */
+// the endpoint for generating the reader
 router.post('/reader', upload.single('epub'), function (req, res) {
+
   // append .epub extension to generated filename
   const epubPath = `${req.file.path}.epub`;
   fs.renameSync(req.file.path, epubPath);
+  const unzipPath = req.file.path;
 
   const width = req.body.width;
   const height = req.body.height;
-
   const epub = new EPub(epubPath);
 
-  const unzipPath = req.file.path;
+  // register callback to be called when parsing epub finished
   epub.on('end', () => {
     fs.createReadStream(epubPath)
       .pipe(unzip.Extract({ path: unzipPath }))
       .on('close', () => {
+
+        // inline resources in all the chapters
         Promise.all(epub.flow.map((e) => {
             const html = fs.readFileSync(path.join(unzipPath, e.href), 'utf8');
             $ = cheerio.load(html);
@@ -76,7 +79,7 @@ router.post('/reader', upload.single('epub'), function (req, res) {
 });
 
 /**
- * Promise version of the inliner.
+ * Promisified version of the inliner. Allows us to easily process an array of files asynchromously using Promise.all().
  */
 function inline(path) {
   return new Promise((resolve, reject) => {
